@@ -49,8 +49,8 @@ Here is a list:
 Changelog
 ---------
 
-### 1.0.1
-+ located class file into src
+### 1.0.2
++ move class file into src
 
 ### 1.0
 + initiation as standalone package
