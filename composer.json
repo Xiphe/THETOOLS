@@ -1,0 +1,15 @@
+{
+    "name": "xiphe/thetools",
+    "description": "A little collection of standalone functions and libs for everyday usage.",
+    "authors": [
+        {
+            "name": "Xiphe",
+            "email": "info@xiphe.net"
+        }
+    ],
+    "minimum-stability": "beta",
+    "require": {
+        "ikimea/browser": "dev-master",
+        "duvanmonsa/php-query": "dev-master"
+    }
+}
