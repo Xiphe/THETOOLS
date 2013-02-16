@@ -109,6 +109,13 @@ class THETOOLS {
      */
     private static $s_phpQueryInitiated = false;
 
+    /**
+     * An optional url that will be used by get_currentUrl instead of the real one.
+     *
+     * @var boolean|string
+     */
+    private static $fakeCurrentUrl = false;
+
 
     /* ---------------- *
      *  STATIC METHODS  *
@@ -1035,60 +1042,106 @@ class THETOOLS {
     /**
      * curPageURL returns the current url
      *
-     * by http://www.webcheatsheet.com/PHP/get_current_page_url.php
-     * modified by xiphe
-     *
      * @param string|array $filter part or parts of the url structure that should be ignored.
      *
      * @return string the current URL
      */
     public static function get_currentUrl($filter = array(), $queryFilter = array(), $queryFilterMethod = 'remove')
     {
-        if (!is_array($filter)) {
+        if (!is_array($filter) && !empty($filter)) {
             $filter = array($filter);
         }
 
-        $pageUrl = '';
+        if (!empty(self::$fakeCurrentUrl)) {
+            $pageURL = self::$fakeCurrentUrl;
+        } else {
+            $pageURL = self::get_realCurrentUrl();
+        }
+
+        if (empty($filter)) {
+            return $pageURL;
+        }
+        $urlParts = parse_url($pageURL);
+
         if (!in_array('http', $filter)) {
-            $pageURL = 'http';
-            if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
-                $pageURL .= "s";
-            }
-            $pageURL .= "://";
+            $pageURL = preg_replace('#.*://#', '', $pageURL);
         }
-        if (!in_array('name', $filter)) {
-            $pageURL .= $_SERVER["SERVER_NAME"];
+
+        if (!in_array('name', $filter) && !in_array('host', $filter) && array_key_exists('host', $urlParts)) {
+            $pageURL = str_replace($urlParts['host'], '', $pageURL);
         }
-        if (!in_array('port', $filter) && isset($_SERVER["SERVER_PORT"]) && $_SERVER["SERVER_PORT"] != "80") {
-            $pageURL .= ":".$_SERVER["SERVER_PORT"];
+
+        if (!in_array('port', $filter) && array_key_exists('port', $urlParts)) {
+            $pageURL = str_replace(':'.$urlParts['port'], '', $pageURL);
         }
         
-        if (!in_array('request', $filter)) {
+        if (!in_array('path', $filter) && array_key_exists('path', $urlParts)) {
+            $pageURL = str_replace($urlParts['path'], '', $pageURL);
+        }
 
-            $request_uri = $_SERVER["REQUEST_URI"];
-
+        if ((in_array('request', $filter) || in_array('query', $filter)) && array_key_exists('query', $urlParts)) {
             if (!empty($queryFilter) && is_array($queryFilter)) {
-                $request = explode('?', $request_uri);
-                if (count($request) > 1) {
-                    parse_str($request[1], $query);
+                parse_str($urlParts['query'], $query);
+                
 
-                    self::filter_data($query, $queryFilter, $queryFilterMethod);
+                self::filter_data($query, $queryFilter, $queryFilterMethod);
 
+                $pageURL = explode('?', $pageURL);
 
-                    if (empty($query)) {
-                        unset($request[1]);
-                    } else {
-                        $request[1] = http_build_query($query);
-                    }
-
-                    $request_uri = implode('?', $request);
+                if (empty($query)) {
+                    unset($pageURL[1]);
+                } else {
+                    $pageURL[1] = http_build_query($query);
                 }
-            }
 
-            $pageURL .= $request_uri;
+                $pageURL = implode('?', $pageURL);
+            }
+        } else {
+            $pageURL = preg_replace('/\?.*/', '', $pageURL);
         }
 
         return $pageURL;
+    }
+
+    /**
+     * Get the current url based on $_SERVER
+     *
+     * by http://www.webcheatsheet.com/PHP/get_current_page_url.php
+     *
+     * @return [type] [description]
+     */
+    public static function get_realCurrentUrl()
+    {
+        $pageURL = 'http';
+        if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
+            $pageURL .= "s";
+        }
+        $pageURL .= "://".$_SERVER["SERVER_NAME"];
+        if (isset($_SERVER["SERVER_PORT"]) && $_SERVER["SERVER_PORT"] != "80") {
+            $pageURL .= $_SERVER["SERVER_PORT"];
+        }
+        $pageURL .= $_SERVER["REQUEST_URI"];
+        return $pageURL;
+    }
+
+    /**
+     * Set an url that will be used by get_currentUrl instead of the real current url.
+     *
+     * @param string $url
+     */
+    public static function set_currentUrl($url)
+    {
+        self::$fakeCurrentUrl = $url;
+    }
+
+    /**
+     * Remove a faked current url set by set_currentUrl()
+     *
+     * @return void
+     */
+    public static function reset_currentUrl()
+    {
+        self::$fakeCurrentUrl = false;
     }
 
     /**
