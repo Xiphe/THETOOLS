@@ -30,6 +30,7 @@ namespace Xiphe;
 */
 
 class THETOOLS {
+
     /* ------------------ *
      *  STATIC VARIABLES  *
      * ------------------ */
@@ -193,7 +194,7 @@ class THETOOLS {
      * @param  string  $DS     the directory separator that should be used.
      * @return string
      */
-    public static function getPathsBase(&$a, &$b, $modify = false, $DS = DS) {
+    public static function getPathsBase(&$a, &$b, $modify = false, $DS = DIRECTORY_SEPARATOR) {
         if ($modify) {
             $str1 = &$a;
             $str2 = &$b;
@@ -232,12 +233,12 @@ class THETOOLS {
         if (is_dir($path)) {
             return true;
         }
-        $dir = DS;
-        foreach(explode(DS, self::unify_slashes($path, DS, true)) as $f) {
+        $dir = DIRECTORY_SEPARATOR;
+        foreach(explode(DIRECTORY_SEPARATOR, self::unify_slashes($path, DIRECTORY_SEPARATOR, true)) as $f) {
             if (empty($f)) {
                 continue;
             }
-            $dir .= $f.DS;
+            $dir .= $f.DIRECTORY_SEPARATOR;
             if (is_dir($dir)) {
                 continue;
             }
@@ -445,7 +446,7 @@ class THETOOLS {
             $height = round($size[1]*$p);
         }
 
-        $r = dirname($path).DS;
+        $r = dirname($path).DIRECTORY_SEPARATOR;
         $r .= preg_replace('/-[0-9]+x[0-9]+/', '', pathinfo($path, PATHINFO_FILENAME));
         $r .= '-'.$width.'x'.$height.'.'.pathinfo($path, PATHINFO_EXTENSION);
         return $r;
@@ -481,7 +482,7 @@ class THETOOLS {
 
         $new_image = imagecreatetruecolor($width, $height);
         if (!isset($target)) {
-            $target = dirname($path).DS;
+            $target = dirname($path).DIRECTORY_SEPARATOR;
             $target .= preg_replace('/-[0-9]+x[0-9]+/', '', pathinfo($path, PATHINFO_FILENAME));
             $target .= '-'.$width.'x'.$height.'.'.pathinfo($path, PATHINFO_EXTENSION);
             $r = $target;
@@ -1409,7 +1410,7 @@ class THETOOLS {
      */
     public static function unDS($str, $unify = false)
     {
-        return self::_slash($str, DS, false, false, $unify);
+        return self::_slash($str, DIRECTORY_SEPARATOR, false, false, $unify);
     }
 
     /**
@@ -1448,7 +1449,7 @@ class THETOOLS {
      */
     public static function DS($str, $unify = false)
     {
-        return self::_slash($str, DS, false, true, $unify);
+        return self::_slash($str, DIRECTORY_SEPARATOR, false, true, $unify);
     }
 
     /**
@@ -1487,7 +1488,7 @@ class THETOOLS {
      */
     public static function unPreDS($str, $unify = false)
     {
-        return self::_slash($str, DS, true, false, $unify);
+        return self::_slash($str, DIRECTORY_SEPARATOR, true, false, $unify);
     }
 
     /**
@@ -1526,7 +1527,7 @@ class THETOOLS {
      */
     public static function preDS($str, $unify = false)
     {
-        return self::_slash($str, DS, true, true, $unify);
+        return self::_slash($str, DIRECTORY_SEPARATOR, true, true, $unify);
     }
 
     /**
@@ -1600,7 +1601,7 @@ class THETOOLS {
      */
     public static function get_directPath($path)
     {
-        return str_replace('..' . DS, '', self::unify_slashes($path, DS));
+        return str_replace('..' . DIRECTORY_SEPARATOR, '', self::unify_slashes($path, DIRECTORY_SEPARATOR));
     }
     
     /** 
@@ -1613,7 +1614,7 @@ class THETOOLS {
     public static function get_cleanedPath($path)
     {
         deprecated('unify_slashes');
-        return self::unify_slashes($path, DS);
+        return self::unify_slashes($path, DIRECTORY_SEPARATOR);
     }
     
     /** 
@@ -1626,7 +1627,7 @@ class THETOOLS {
      * 
      * @return string
      */
-    public static function unify_slashes($path, $slash = DS, $allowDouble = false)
+    public static function unify_slashes($path, $slash = DIRECTORY_SEPARATOR, $allowDouble = false)
     {
         if ($allowDouble) {
             return preg_replace("/[\/\\\]/", $slash, $path);
