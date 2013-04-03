@@ -679,13 +679,15 @@ class THETOOLS {
      * Echo wrapper for THETOOLS::get_randomString().
      * 
      * @access public
-     * @param  integer $length the length of the string
-     * @param  string  $type   keys of chartypes to be used. See beginning of declaration.
+     * @param  integer $length     the length of the string
+     * @param  string  $type       keys of chartypes to be used. See beginning of declaration.
+     * @param  string  $additional optional string containing additional chars to use beside the ones in $type
+     * 
      * @return string
      */
-    public static function randomString($length = 12, $type = 'pAan')
+    public static function randomString($length = 12, $type = 'pAan', $additional = '')
     {
-        echo self::get_randomString($length, $type);
+        echo self::get_randomString($length, $type, $additional);
     }
     
     /**
@@ -694,9 +696,11 @@ class THETOOLS {
      * @access public
      * @param  integer $length the length of the string
      * @param  string  $type   keys of chartypes to be used. See beginning of declaration.
+     * @param  string  $additional optional string containing additional chars to use beside the ones in $type
+     *
      * @return string
      */
-    public static function get_randomString($length = 12, $type = 'pAan')
+    public static function get_randomString($length = 12, $type = 'pAan', $additional = '')
     {
         $sources = array(
             'p' => '!#$%&()=?*+-_:.;,<>',        // Punctuation
@@ -708,10 +712,12 @@ class THETOOLS {
         $source = '';
 
         foreach ( $sources as $k => $s ) {
-            if (stristr($type, $k)) {
+            if (strstr($type, $k)) {
                 $source .= $s;
             }
         }
+
+        $source .= $additional;
 
         if ($source == '') {
             throw new Exception('Type Error in get_randomString', 1);
