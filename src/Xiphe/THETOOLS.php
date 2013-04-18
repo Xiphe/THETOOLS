@@ -1065,9 +1065,14 @@ class THETOOLS {
             $pageURL = self::get_realCurrentUrl();
         }
 
-        if (empty($filter)) {
+        if (empty($filter) && empty($queryFilter)) {
             return $pageURL;
         }
+
+        if (empty($filter)) {
+            $filter = array('http', 'name', 'port', 'path', 'request');
+        }
+
         $urlParts = parse_url($pageURL);
 
         if (!in_array('http', $filter)) {
