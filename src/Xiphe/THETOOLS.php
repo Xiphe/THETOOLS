@@ -122,6 +122,37 @@ class THETOOLS {
      *  STATIC METHODS  *
      * ---------------- */
 
+    public static function compareNumbers($input, $valid)
+    {
+        $input = intval($input);
+
+        if (strstr($valid, '-')) {
+            $valid = explode('-', $valid);
+            $from = intval($valid[0]);
+            $to = intval($valid[1]);
+
+            if ($input >= $from && $input <= $to) {
+                return true;
+            }
+            return false;
+        }
+
+        $plain_number = intval(preg_replace('/<>=/', '', $input));
+        if (strstr($valid, '<=') && $input <= $plain_number) {
+            return true;
+        } elseif (strstr($valid, '<') && $input < $plain_number) {
+            return true;
+        } elseif (strstr($valid, '>=') && $input >= $plain_number) {
+            return true;
+        } elseif (strstr($valid, '>') && $input > $plain_number) {
+            return true;
+        } elseif ($plain_number === intval($valid) && $plain_number === $input) {
+            return true;
+        }
+
+        return false;
+    }
+
 
     /**
      * Use Glen Scotts UrlNormalizer to normalize the passed url.

@@ -49,6 +49,9 @@ Here is a list:
 Changelog
 ---------
 
+### 1.0.9
++ compareNumbers added.
+
 ### 1.0.8
 + bugfix for get_currentUrl filters
 
