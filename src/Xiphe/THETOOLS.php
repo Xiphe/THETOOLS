@@ -2020,6 +2020,10 @@ class THETOOLS {
         } else {
             foreach ($filter as $name => $filterKey) {
                 if (isset($data[$prefix.'_'.$name])) {
+                    if (self::$s_filters[$filterKey] === 259) {
+                        $data[$prefix.'_'.$name] = str_replace(',', '.', $data[$prefix.'_'.$name]);
+                    }
+
                     $args[$name] = filter_var(
                         $data[$prefix.'_'.$name],
                         self::$s_filters[$filterKey]
