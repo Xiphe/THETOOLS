@@ -122,14 +122,55 @@ class THETOOLS {
      *  STATIC METHODS  *
      * ---------------- */
 
-    public static function compareNumbers($input, $valid)
+    /**
+     * Recursively generate directories if not existent and place a empty file inside it.
+     * 
+     * @param  string  $file      full path to the required file
+     * @param  integer $chmod     chmod for the generated folders
+     * @param  integer $touchTime timestamp for the filemtime
+     * @return null
+     */
+    public static function makeFile($file, $chmod = 0777, $touchTime = null)
+    {
+        if (!file_exists($file)) {
+            if (!is_dir(dirname($file))) {
+                mkdir(dirname($file), 0777, true);
+            }
+            $h = fopen($file, 'w');
+            if ($h) {
+                fclose($h);
+            }
+            unset($h);
+            if (null !== $touchTime) {
+                touch($file, $touchTime);
+            }
+        }
+    }
+
+    /**
+     * Validate a number.
+     *
+     * Example usage:
+     *     THETOOLS::compageNumbers(2, '2')   // true
+     *     THETOOLS::compageNumbers(2, '3')   // false
+     *     THETOOLS::compageNumbers(2, '1-3') // true
+     *     THETOOLS::compageNumbers(4, '1-3') // false
+     *     THETOOLS::compageNumbers(4, '>4')  // false
+     *     THETOOLS::compageNumbers(4, '>=4') // true
+     *     
+     * 
+     * @param  integer $input
+     * @param  string  $validator
+     * @return boolean
+     */
+    public static function compareNumbers($input, $validator)
     {
         $input = intval($input);
 
-        if (strstr($valid, '-')) {
-            $valid = explode('-', $valid);
-            $from = intval($valid[0]);
-            $to = intval($valid[1]);
+        if (strstr($validator, '-')) {
+            $validator = explode('-', $validator);
+            $from = intval($validator[0]);
+            $to = intval($validator[1]);
 
             if ($input >= $from && $input <= $to) {
                 return true;
@@ -138,15 +179,15 @@ class THETOOLS {
         }
 
         $plain_number = intval(preg_replace('/<>=/', '', $input));
-        if (strstr($valid, '<=') && $input <= $plain_number) {
+        if (strstr($validator, '<=') && $input <= $plain_number) {
             return true;
-        } elseif (strstr($valid, '<') && $input < $plain_number) {
+        } elseif (strstr($validator, '<') && $input < $plain_number) {
             return true;
-        } elseif (strstr($valid, '>=') && $input >= $plain_number) {
+        } elseif (strstr($validator, '>=') && $input >= $plain_number) {
             return true;
-        } elseif (strstr($valid, '>') && $input > $plain_number) {
+        } elseif (strstr($validator, '>') && $input > $plain_number) {
             return true;
-        } elseif ($plain_number === intval($valid) && $plain_number === $input) {
+        } elseif ($plain_number === intval($validator) && $plain_number === $input) {
             return true;
         }
 
@@ -2020,10 +2061,6 @@ class THETOOLS {
         } else {
             foreach ($filter as $name => $filterKey) {
                 if (isset($data[$prefix.'_'.$name])) {
-                    if (self::$s_filters[$filterKey] === 259) {
-                        $data[$prefix.'_'.$name] = str_replace(',', '.', $data[$prefix.'_'.$name]);
-                    }
-
                     $args[$name] = filter_var(
                         $data[$prefix.'_'.$name],
                         self::$s_filters[$filterKey]

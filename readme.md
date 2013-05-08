@@ -41,16 +41,19 @@ Here is a list:
   File: http://www.opensource.org/licenses/mit-license.php  
   Developed by Tobiasz Cudnik <tobiasz.cudnik/gmail.com>
 
-* **[URLNormalizer](https://github.com/glenscott/url-normalizer)**
-  Author: [Glen Scott](http://www.glenscott.co.uk/)
+* **[URLNormalizer](https://github.com/glenscott/url-normalizer)**  
+  Author: [Glen Scott](http://www.glenscott.co.uk/)  
   License: (c) Glen Scott - Usage allowed here: http://www.glenscott.co.uk/blog/2011/01/09/normalize-urls-with-php/#comment-98235
 
 
 Changelog
 ---------
 
+### 1.0.10
++ add makeFile method
+
 ### 1.0.9
-+ compareNumbers added.
++ add compareNumbers method.
 
 ### 1.0.8
 + bugfix for get_currentUrl filters
